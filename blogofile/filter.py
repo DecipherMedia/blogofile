@@ -3,7 +3,7 @@ from __future__ import print_function
 import sys
 import os
 import logging
-import imp
+import importlib
 import uuid
 import inspect
 
@@ -132,10 +132,10 @@ def load_filter(name, module_path, namespace=None):
         # Don't generate .pyc files in the _filters directory
         sys.dont_write_bytecode = True
         if module_path.endswith(".py"):
-            mod = imp.load_source(
+            mod = importlib.load_source(
                 "{0}_{1}".format(name, uuid.uuid4()), module_path)
         else:
-            mod = imp.load_package(
+            mod = importlib.load_package(
                 "{0}_{1}".format(name, uuid.uuid4()), module_path)
         logger.debug("Loaded filter for first time: {0}".format(module_path))
         mod.__initialized = False
