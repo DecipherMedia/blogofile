@@ -53,7 +53,7 @@ import sys
 import os
 import operator
 import logging
-import imp
+import impportlib
 
 from .cache import bf
 
@@ -121,8 +121,8 @@ def load_controller(name, namespace, directory="_controllers", defaults={},
     try:
         try:
             sys.dont_write_bytecode = True
-            controller = imp.load_module(
-                name, *imp.find_module(name, [directory]))
+            controller = importlib.load_module(
+                name, *implib.find_module(name, [directory]))
             controller.__initialized = False
             logger.debug("found controller: {0} - {1}"
                          .format(name, controller))
