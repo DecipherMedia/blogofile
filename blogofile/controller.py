@@ -134,7 +134,7 @@ def load_controller(name, namespace, directory="_controllers", defaults={},
         try:
             sys.dont_write_bytecode = True
             controller = load_module_from_source(
-                name, *implib.find_module(name, [directory]))
+                name, *importlib.find_module(name, [directory]))
             controller.__initialized = False
             logger.debug("found controller: {0} - {1}"
                          .format(name, controller))
