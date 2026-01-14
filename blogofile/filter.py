@@ -13,6 +13,17 @@ from .cache import bf
 from .cache import HierarchicalCache
 from . import exception
 
+## 2026-01-13 python 3.12 does not have imp.load_source so
+## here's an updated version using importlib
+def load_module_from_source(module_name, file_path):
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    if spec is None:
+        raise ImportError(f"Cannot find module spec for {module_name} at {file_path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module  # Important: add the module to sys.modules
+    spec.loader.exec_module(module)
+    return module
+
 bf.filter = sys.modules['blogofile.filter']
 
 default_filter_config = {"name": None,
@@ -132,7 +143,7 @@ def load_filter(name, module_path, namespace=None):
         # Don't generate .pyc files in the _filters directory
         sys.dont_write_bytecode = True
         if module_path.endswith(".py"):
-            mod = importlib.load_source(
+            mod = load_module_from_source(
                 "{0}_{1}".format(name, uuid.uuid4()), module_path)
         else:
             mod = importlib.load_package(
