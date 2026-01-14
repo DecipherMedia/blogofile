@@ -54,8 +54,20 @@ import os
 import operator
 import logging
 import importlib
+import importlib.util
 
 from .cache import bf
+
+# 2026-01-13 python 3.12 does not have imp.load_source so
+# here's an updated version using importlib
+def load_module_from_source(module_name, file_path):
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    if spec is None:
+        raise ImportError(f"Cannot find module spec for {module_name} at {file_path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module  # Important: add the module to sys.modules
+    spec.loader.exec_module(module)
+    return module
 
 
 bf.controller = sys.modules['blogofile.controller']
@@ -121,7 +133,7 @@ def load_controller(name, namespace, directory="_controllers", defaults={},
     try:
         try:
             sys.dont_write_bytecode = True
-            controller = importlib.load_module(
+            controller = load_module_from_source(
                 name, *implib.find_module(name, [directory]))
             controller.__initialized = False
             logger.debug("found controller: {0} - {1}"
