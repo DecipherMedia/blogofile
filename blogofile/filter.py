@@ -4,6 +4,7 @@ import sys
 import os
 import logging
 import importlib
+import importlib.util
 import uuid
 import inspect
 
@@ -13,8 +14,8 @@ from .cache import bf
 from .cache import HierarchicalCache
 from . import exception
 
-## 2026-01-13 python 3.12 does not have imp.load_source so
-## here's an updated version using importlib
+# 2026-01-13 python 3.12 does not have imp.load_source so
+# here's an updated version using importlib
 def load_module_from_source(module_name, file_path):
     spec = importlib.util.spec_from_file_location(module_name, file_path)
     if spec is None:
